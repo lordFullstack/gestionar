@@ -1,0 +1,32 @@
+name: Backend Deploy (Railway)
+
+# PAUSADO por ahora: sin un host real conectado (Railway u otro) y sin el
+# secret RAILWAY_TOKEN configurado, este workflow fallaría en cada push a
+# main. Mientras tanto solo se puede correr a mano desde la pestaña Actions
+# (botón "Run workflow") — y aun así fallará hasta completar el setup de
+# DEPLOYMENT.md. El backend, por ahora, se prueba en local (npm run
+# start:dev) o contra el mismo Supabase de siempre.
+#
+# Para reactivar el despliegue automático cuando ya tengas un host real:
+# descomenta el bloque "push:" de abajo.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy a Railway
+        working-directory: backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service backend
