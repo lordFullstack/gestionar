@@ -1,0 +1,47 @@
+name: Backend CI
+
+# Corre en cada push y pull request que toque algo dentro de backend/.
+# Solo valida que compile — no toca la base de datos real ni despliega nada.
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci.yml'
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar cliente de Prisma
+        # No requiere una base de datos real: prisma generate solo lee el
+        # schema. El valor de DATABASE_URL es un placeholder para que la
+        # herramienta no se queje de la variable ausente.
+        env:
+          DATABASE_URL: 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
+          DIRECT_URL: 'postgresql://placeholder:placeholder@localhost:5432/placeholder'
+        run: npx prisma generate
+
+      - name: Type-check
+        run: npx tsc --noEmit -p tsconfig.json
+
+      - name: Build
+        run: npm run build
