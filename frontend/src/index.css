@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 28% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 12%;
+
+    --primary: 219 42% 21%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 16% 93%;
+    --secondary-foreground: 215 28% 14%;
+
+    --muted: 210 16% 93%;
+    --muted-foreground: 215 14% 42%;
+
+    --accent: 39 63% 55%;
+    --accent-foreground: 219 42% 15%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 55% 32%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 85% 47%;
+    --warning-foreground: 24 30% 12%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 219 42% 30%;
+
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Todas las cifras monetarias del sistema usan esta clase: números
+     tabulares en monospace, como una cinta de caja registradora / libro
+     contable. Es el detalle de identidad visual del ERP. */
+  .figure {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  ::selection {
+    background-color: hsl(var(--accent) / 0.35);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
