@@ -5,13 +5,19 @@ WORKDIR /app
 # Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Instalar dependencias
+# Instalar TODAS las dependencias (incluye devDependencies, necesarias para el build)
 RUN npm ci
 
-# Copiar código fuente
+# Copiar el schema de prisma ANTES de generar el cliente
+COPY prisma ./prisma
+
+# Generar el cliente de Prisma (crítico: sin esto, nest build falla)
+RUN npx prisma generate
+
+# Copiar el resto del código fuente
 COPY . .
 
-# Buildear la app
+# Compilar TypeScript -> JS
 RUN npm run build
 
 # Stage final - runtime
@@ -25,12 +31,17 @@ COPY package*.json ./
 # Instalar solo dependencias de producción
 RUN npm ci --only=production
 
+# Copiar el schema de prisma (necesario para que el cliente funcione en runtime)
+COPY prisma ./prisma
+
+# Generar el cliente de Prisma también en la imagen final
+RUN npx prisma generate
+
 # Copiar dist compilado desde el builder
 COPY --from=builder /app/dist ./dist
 
 # Exponer puerto (NestJS por defecto usa 3000)
 EXPOSE 3000
 
-# Comando para correr la app
-CMD ["node", "dist/main.js"]
-
+# Ejecutar migraciones pendientes y luego arrancar el server
+CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]
