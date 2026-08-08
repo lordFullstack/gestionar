@@ -33,3 +33,4 @@ EXPOSE 3000
 
 # Comando para correr la app
 CMD ["node", "dist/main.js"]
+
